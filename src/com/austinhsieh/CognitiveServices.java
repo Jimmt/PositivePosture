@@ -1,3 +1,4 @@
+package com.austinhsieh;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -29,9 +30,9 @@ public class CognitiveServices {
         this.key = key;
     }
 
-    public JsonArray postLocalToFaceAPI(BufferedImage image) {
-        HttpPost httpPost = new HttpPost(
-        "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true");
+    public JsonArray postLocalToEmotionAPI(BufferedImage image) {
+        HttpPost httpPost = new HttpPost("https://api.projectoxford.ai/emotion/v1.0/recognize");
+        //"https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true"
         httpPost.setHeader("Content-Type", "application/octet-stream");
         httpPost.setHeader("Ocp-Apim-Subscription-Key", key);
 
@@ -71,7 +72,7 @@ public class CognitiveServices {
         return imageInByte;
     }
 
-    public JsonObject postWebToFaceAPI(String imageURL) {
+    public JsonObject postWebToEmotionAPI(String imageURL) {
         HttpPost httpPost = new HttpPost(
         "https://api.projectoxford.ai/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=true");
         httpPost.setHeader("Content-Type", "application/json");
