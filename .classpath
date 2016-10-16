@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="libs/httpmime-4.5.2.jar"/>
 	<classpathentry kind="lib" path="libs/jna-4.1.0.jar"/>
 	<classpathentry kind="lib" path="libs/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Andrew/Desktop/Projects/Java/Java/DubHacks2016/libs/webcam cap/webcam-capture-0.3.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
