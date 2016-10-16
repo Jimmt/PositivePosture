@@ -1,3 +1,4 @@
+package com.austinhsieh;
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,7 +8,10 @@ import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
@@ -27,16 +31,34 @@ public class PositivePosture {
     int frameWidth = 1366, frameHeight = 768;
     int faceTop, faceLeft, faceWidth, faceHeight;
     boolean calibrated = false;
+    ArrayList<String> jokes;
 
     public static void main(String[] args) {
         PositivePosture pp = new PositivePosture();
     }
 
     public PositivePosture() {
+        loadJokes();
         setupCognitiveServices();
         setupWebcam();
         setupUI();
         startVideo();
+    }
+
+    public void loadJokes() {
+        jokes = new ArrayList<String>();
+        Scanner fileScanner = null;
+        try {
+            fileScanner = new Scanner(new File("jokes.txt"));
+            while (fileScanner.hasNextLine()) {
+                jokes.add(fileScanner.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            fileScanner.close();
+        }
+
     }
 
     public void startVideo() {
@@ -51,7 +73,7 @@ public class PositivePosture {
     }
 
     public void setupCognitiveServices() {
-        cognitiveServices = new CognitiveServices("45480e1bce5d49028bf803d097db09c5");
+        cognitiveServices = new CognitiveServices("40e35a21c2764b878bd8d2e471af39b9");
     }
 
     public void setupWebcam() {
@@ -103,9 +125,10 @@ public class PositivePosture {
             webcam.open();
             BufferedImage calibrateImage = webcam.getImage();
             webcam.close();
-            JsonArray jsonArray = cognitiveServices.postLocalToFaceAPI(calibrateImage);
+            JsonArray jsonArray = cognitiveServices.postLocalToEmotionAPI(calibrateImage);
             if (jsonArray.size() > 0) {
-                JsonObject faceRectangle = determineUser(jsonArray);
+                JsonObject faceRectangle = determineUser(jsonArray).get("faceRectangle")
+                .getAsJsonObject();
                 faceTop = faceRectangle.get("top").getAsInt();
                 faceLeft = faceRectangle.get("left").getAsInt();
                 faceWidth = faceRectangle.get("width").getAsInt();
@@ -133,20 +156,37 @@ public class PositivePosture {
                     webcam.close();
                     panel.drawImage(image);
 
-                    JsonArray jsonArray = cognitiveServices.postLocalToFaceAPI(image);
+                    JsonArray jsonArray = cognitiveServices.postLocalToEmotionAPI(image);
                     if (jsonArray.size() > 0) {
-                        JsonObject faceRectangle = determineUser(jsonArray);
+                        JsonObject singleUserJson = determineUser(jsonArray);
+                        JsonObject faceRectangle = singleUserJson.get("faceRectangle")
+                        .getAsJsonObject();
+                        JsonObject emotionScores = singleUserJson.get("scores").getAsJsonObject(); // map not array
+
+                        if (emotionScores.get("anger").getAsDouble() > 0.2) {
+                            triggerNotification("Don't get mad, get glad",
+                            jokes.get((int) (Math.random() * jokes.size())));
+                        }
+                        if (emotionScores.get("sadness").getAsDouble() > 0.2) {
+                            triggerNotification("Don't get sad, get glad",
+                            jokes.get((int) (Math.random() * jokes.size())));
+                        }
+
+                        //                        Iterator<Entry<String, JsonElement>> iterator = emotionScores.entrySet().iterator();
+                        //                        while(iterator.hasNext()){
+                        //                            iterator.next().
+                        //                        }
 
                         int diffWidth = faceRectangle.get("width").getAsInt() - faceWidth;
                         int diffHeight = faceRectangle.get("height").getAsInt() - faceHeight;
                         boolean out = false;
-                        if (diffWidth >= 30 && diffHeight >= 30) {
+                        if (diffWidth >= 20 && diffHeight >= 20) {
                             out = true;
                         }
 
                         Color drawColor = null;
                         if (out) {
-                            triggerNotification();
+                            triggerNotification("Posture Alert", "Bad Posture");
                             drawColor = Color.BLUE;
                         } else {
                             drawColor = Color.RED;
@@ -174,10 +214,10 @@ public class PositivePosture {
                 index = i;
             }
         }
-        return jsonArray.get(index).getAsJsonObject().get("faceRectangle").getAsJsonObject();
+        return jsonArray.get(index).getAsJsonObject();
     }
 
-    public void triggerNotification() {
+    public void triggerNotification(String caption, String text) {
         //Obtain only one instance of the SystemTray object
         SystemTray tray = SystemTray.getSystemTray();
 
@@ -195,7 +235,7 @@ public class PositivePosture {
         } catch (AWTException e) {
             e.printStackTrace();
         }
-        trayIcon.displayMessage("Posture Alert", "Bad Posture", MessageType.NONE);
+        trayIcon.displayMessage(caption, text, MessageType.NONE);
     }
 
 }
