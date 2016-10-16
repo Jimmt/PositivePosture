@@ -9,7 +9,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 public class DisplayPanel extends JPanel {
-    public BufferedImage camPic;
+    public BufferedImage camPic; 
+    public Image scaledCamPic;
 
     public DisplayPanel() {
         camPic = new BufferedImage(1280, 1000, BufferedImage.TYPE_INT_ARGB);
@@ -23,7 +24,7 @@ public class DisplayPanel extends JPanel {
 
     public void drawImage(BufferedImage image) {
         camPic = image;
-        Image scaledCamPic = camPic.getScaledInstance(getWidth(), getHeight(), Image.SCALE_DEFAULT);
+        scaledCamPic = camPic.getScaledInstance(getWidth(), getHeight(), Image.SCALE_DEFAULT);
         getGraphics().drawImage(scaledCamPic, 0, 0, null);
     }
 

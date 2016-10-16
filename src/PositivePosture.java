@@ -36,6 +36,18 @@ public class PositivePosture {
         setupCognitiveServices();
         setupWebcam();
         setupUI();
+        startVideo();
+    }
+
+    public void startVideo() {
+        webcam.open(true);
+        long lastFrameTime = 0, frameTime = 16;
+        while (calibrationThread == null) {
+            if (System.currentTimeMillis() - lastFrameTime >= frameTime) {
+                lastFrameTime = System.currentTimeMillis();
+                panel.drawImage(webcam.getImage());
+            }
+        }
     }
 
     public void setupCognitiveServices() {
