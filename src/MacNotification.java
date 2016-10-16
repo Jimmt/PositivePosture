@@ -6,7 +6,9 @@ import java.lang.Runtime;
 public class MacNotification {
 
     /**
-     * displays notification, currently triggered by typing "fix". trigger can/will be changed 
+     * displays notification, currently triggered by typing "fix". trigger
+     * can/will be changed
+     * 
      * @param args
      */
     public static void main(String[] args) {
@@ -22,7 +24,7 @@ public class MacNotification {
         String[] args2 = { "osascript", "-e", applescriptCommand };
         if (in.equals("fix")) {
             try {
-                Process process = runtime.exec(args2);
+                runtime.exec(args2);
             } catch (IOException e) {
                 e.printStackTrace();
             }
