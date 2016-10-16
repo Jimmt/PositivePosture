@@ -1,4 +1,5 @@
 package com.austinhsieh;
+
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,11 +8,12 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
@@ -47,16 +49,18 @@ public class PositivePosture {
 
     public void loadJokes() {
         jokes = new ArrayList<String>();
-        Scanner fileScanner = null;
+
+        InputStream in = getClass().getResourceAsStream("/jokes.txt");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+
         try {
-            fileScanner = new Scanner(new File("jokes.txt"));
-            while (fileScanner.hasNextLine()) {
-                jokes.add(fileScanner.nextLine());
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jokes.add(line);
             }
-        } catch (FileNotFoundException e) {
+            in.close();
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            fileScanner.close();
         }
 
     }
