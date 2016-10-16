@@ -100,7 +100,7 @@ public class PositivePosture {
                 faceWidth = faceRectangle.get("width").getAsInt();
                 faceHeight = faceRectangle.get("height").getAsInt();
                 panel.drawImage(calibrateImage);
-                panel.drawFaceRectangle(Color.GREEN, faceLeft, faceTop, faceWidth, faceHeight);
+                panel.drawFaceRectangle(Color.YELLOW, faceLeft, faceTop, faceWidth, faceHeight);
                 calibrated = true;
             }
             listener.onFinished();
